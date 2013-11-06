@@ -1,6 +1,6 @@
 name := "slaughter-spotter"
 
-version := "1.0"
+version := "1.1"
 
 scalaVersion := "2.10.2"
 
@@ -20,6 +20,12 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.1.4",
   "com.typesafe.akka" %% "akka-testkit" % "2.1.4",
   "org.json4s"    %% "json4s-native"   % "3.2.4",
+  "org.json4s" % "json4s-ext_2.10" % "3.2.4",
+  "com.typesafe.slick" %% "slick" % "1.0.0",
+  "org.slf4j" % "slf4j-nop" % "1.6.4",
+  "mysql" % "mysql-connector-java" % "5.1.26",
+  "joda-time" % "joda-time" % "2.3",
+  "org.joda" % "joda-convert" % "1.5",
   "org.eclipse.jetty" % "jetty-webapp" % "8.1.13.v20130916" % "container",
   "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container" artifacts Artifact("javax.servlet", "jar", "jar"),
   "org.specs2" %% "specs2" % "1.14" % "test"
