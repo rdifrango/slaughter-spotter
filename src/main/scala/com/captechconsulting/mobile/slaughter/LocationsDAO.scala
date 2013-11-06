@@ -33,11 +33,7 @@ object LocationsDAO {
   val password = System.getProperty("RDS_PASSWORD")
   val hostname = System.getProperty("RDS_HOSTNAME")
   val port = System.getProperty("RDS_PORT")
-  //  val dbName = "mobilebotcamp"
-  //  val userName = "rdifrango"
-  //  val password = "w052795w"
-  //  val hostname = "mobilebootcamp.cp5k3lfdkxtn.us-east-1.rds.amazonaws.com"
-  //  val port = "3306"
+
   /**
    * Build the URL based upon those variables.
    */
