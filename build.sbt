@@ -1,6 +1,6 @@
 name := "slaughter-spotter"
 
-version := "1.1"
+version := "1.2"
 
 scalaVersion := "2.10.2"
 
@@ -21,7 +21,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % "2.1.4",
   "org.json4s"    %% "json4s-native"   % "3.2.4",
   "org.json4s" % "json4s-ext_2.10" % "3.2.4",
-  "com.typesafe.slick" %% "slick" % "1.0.0",
+  "com.typesafe.slick" %% "slick" % "2.0.0",
+  "c3p0" % "c3p0" % "0.9.1.2",
   "org.slf4j" % "slf4j-nop" % "1.6.4",
   "mysql" % "mysql-connector-java" % "5.1.26",
   "joda-time" % "joda-time" % "2.3",

@@ -2,64 +2,76 @@ package com.captechconsulting.mobile.slaughter
 
 import java.sql.Timestamp
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.session.Database
-import scala.slick.session.Database.threadLocalSession
 import org.joda.time.Instant
+import com.typesafe.config._
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.jdbc.meta._
+import com.mchange.v2.c3p0.ComboPooledDataSource
 
 object LocationsDAO {
   /**
    * Used to implicitly convert from Joda Time's Instant into a java.sql.Timestamp
    */
-  implicit def date2dateTime = MappedTypeMapper.base[Instant, Timestamp](
+  implicit def date2dateTime = MappedColumnType.base[Instant, Timestamp](
     dateTime => new Timestamp(dateTime.getMillis),
     date => new Instant(date))
   /**
    * Maps from our Location object to the Locations table.
    */
-  object Locations extends Table[Location]("LOCATIONS") {
+  class Locations(tag: Tag) extends Table[Location](tag, "LOCATIONS") {
     def id = column[Int]("LOCATION_ID", O.PrimaryKey, O.AutoInc)
     def latitude = column[String]("LATITUDE")
     def longitude = column[String]("LONGITUDE")
     def date = column[Instant]("DATE")
-    def * = id.? ~ latitude ~ longitude ~ date <> (Location, Location.unapply _)
-    def forInsert = latitude ~ longitude ~ date <> ({ t => Location(None, t._1, t._2, t._3) }, { (u: Location) => Some((u.latitude, u.longitude, u.date)) })
+    def * = (id.?, latitude, longitude, date) <> (Location.tupled, Location.unapply)
   }
 
   /**
-   * Environment variables defined by AWS
+   * Access the environment variable
    */
-  val dbName = System.getProperty("RDS_DB_NAME")
-  val userName = System.getProperty("RDS_USERNAME")
-  val password = System.getProperty("RDS_PASSWORD")
-  val hostname = System.getProperty("RDS_HOSTNAME")
-  val port = System.getProperty("RDS_PORT")
-
+  val config = ConfigFactory.load();
   /**
-   * Build the URL based upon those variables.
+   * Retrieve the URL
    */
-  val jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password
+  val url = config.getString("jdbc.url")
   /**
-   * Set the driver.
+   * Retrieve the driver.
    */
-  val driver = "com.mysql.jdbc.Driver"
+  val driver = config.getString("jdbc.driver")
+  /*
+   * Config a connection pool using C3P0
+   */
+  val datasource = {
+    val ds = new ComboPooledDataSource
+    ds.setDriverClass(driver)
+    ds.setJdbcUrl(url)
+    Database.forDataSource(ds)
+  }
+  /*
+   * Optionally create the table
+   */
+  datasource withSession { implicit session =>
+  if (MTable.getTables("LOCATIONS").list.isEmpty) {
+	    println("Creating Locations Table")
+    	TableQuery[Locations].ddl.create
+    }
+  }
 
   /**
    * Creates a location
    */
   def locationCreate(loc: Location) =
-    Database.forURL(jdbcUrl, driver = driver) withSession {
-	  println("jdbcUrl = " + jdbcUrl)
-      Locations.forInsert insert loc
+    datasource withSession { implicit session =>
+      TableQuery[Locations].insert(loc)
     }
 
   /**
    * Counts the number of locations.
    */
   def locationCount: Int = {
-    Database.forURL(jdbcUrl, driver = driver) withSession {
-      println("jdbcUrl = " + jdbcUrl)
-      val count = Query(Locations.length).first
-      count
+    datasource withSession { implicit session =>
+      TableQuery[Locations].length.run
     }
   }
 
@@ -67,10 +79,8 @@ object LocationsDAO {
    * Gives a list of locations.
    */
   def locationList: List[Location] = {
-    Database.forURL(jdbcUrl, driver = driver) withSession {
-      println("jdbcUrl = " + jdbcUrl)
-      val locations = Query(Locations).list
-      locations
+    datasource withSession { implicit session =>
+      TableQuery[Locations].list
     }
   }
 }
