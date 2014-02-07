@@ -9,7 +9,11 @@ import scala.slick.lifted.TableQuery
 import scala.slick.jdbc.meta._
 import com.mchange.v2.c3p0.ComboPooledDataSource
 
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
+
 object LocationsDAO {
+  
   /**
    * Used to implicitly convert from Joda Time's Instant into a java.sql.Timestamp
    */
@@ -26,26 +30,29 @@ object LocationsDAO {
     def date = column[Instant]("DATE")
     def * = (id.?, latitude, longitude, date) <> (Location.tupled, Location.unapply)
   }
+  
+  val logger = LoggerFactory.getLogger(getClass())
 
   /**
    * Access the environment variable
    */
-  val config = ConfigFactory.load();
-  /**
-   * Retrieve the URL
-   */
-  val url = config.getString("jdbc.url")
-  /**
-   * Retrieve the driver.
-   */
-  val driver = config.getString("jdbc.driver")
+  logger.info("Loading Config")
+  val config = ConfigFactory.load
+  logger.info("Config Loaded")
+  
   /*
    * Config a connection pool using C3P0
    */
   val datasource = {
+    logger.info("Connecting to the Database")
     val ds = new ComboPooledDataSource
-    ds.setDriverClass(driver)
-    ds.setJdbcUrl(url)
+    ds.setDriverClass(config.getString("jdbc.driver"))
+    logger.info("Driver Class: {}", ds.getDriverClass())
+    ds.setJdbcUrl(config.getString("jdbc.url"))
+    logger.info("JDBC URL: {}",  ds.getJdbcUrl())
+    ds.setUser(config.getString("jdbc.userName"))
+    logger.info("JDBC User: {}", ds.getUser())
+    ds.setPassword(config.getString("jdbc.password"))
     Database.forDataSource(ds)
   }
   /*
@@ -53,7 +60,7 @@ object LocationsDAO {
    */
   datasource withSession { implicit session =>
   if (MTable.getTables("LOCATIONS").list.isEmpty) {
-	    println("Creating Locations Table")
+	    logger.info("Creating Locations Table")
     	TableQuery[Locations].ddl.create
     }
   }
@@ -63,6 +70,7 @@ object LocationsDAO {
    */
   def locationCreate(loc: Location) =
     datasource withSession { implicit session =>
+      logger.info("Creating Location: {}", loc)
       TableQuery[Locations].insert(loc)
     }
 
