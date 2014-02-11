@@ -53,6 +53,8 @@ object LocationsDAO {
     ds.setUser(config.getString("jdbc.userName"))
     logger.info("JDBC User: {}", ds.getUser())
     ds.setPassword(config.getString("jdbc.password"))
+    ds.setInitialPoolSize(1)
+    ds.setMaxPoolSize(5)
     Database.forDataSource(ds)
   }
   /*

@@ -1,6 +1,6 @@
 name := "slaughter-spotter"
 
-version := "1.2"
+version := "1.2.0"
 
 scalaVersion := "2.10.2"
 
@@ -11,14 +11,14 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.spray" % "spray-can" % "1.1-M8",
-  "io.spray" % "spray-http" % "1.1-M8",
-  "io.spray" % "spray-httpx" % "1.1-M8",
-  "io.spray" % "spray-routing" % "1.1-M8",
-  "io.spray" % "spray-servlet" % "1.1-M8",
-  "io.spray" % "spray-testkit" % "1.1-M8",
-  "com.typesafe.akka" %% "akka-actor" % "2.1.4",
-  "com.typesafe.akka" %% "akka-testkit" % "2.1.4",
+  "io.spray" % "spray-can" % "1.2.0",
+  "io.spray" % "spray-http" % "1.2.0",
+  "io.spray" % "spray-httpx" % "1.2.0",
+  "io.spray" % "spray-routing" % "1.2.0",
+  "io.spray" % "spray-servlet" % "1.2.0",
+  "io.spray" % "spray-testkit" % "1.2.0",
+  "com.typesafe.akka" %% "akka-actor" % "2.2.3",
+  "com.typesafe.akka" %% "akka-testkit" % "2.2.3",
   "org.json4s"    %% "json4s-native"   % "3.2.4",
   "org.json4s" % "json4s-ext_2.10" % "3.2.4",
   "com.typesafe.slick" %% "slick" % "2.0.0",

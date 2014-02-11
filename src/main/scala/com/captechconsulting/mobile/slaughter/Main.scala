@@ -32,7 +32,7 @@ class MyServiceActor extends Actor with MyService {
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with Json4sSupport {
   val myRoute =
-    pathPrefix("api") {
+    pathPrefix("spotter" / "api") {
       path("spotter") {
         get {
           parameters('count.as[Boolean]?) { count =>
